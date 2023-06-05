@@ -225,7 +225,7 @@ fleet-controller-xxxxxxx-xxxx   1/1     Running   0          3m21s
 
 **Delete Existing namespace**
 > If you have deployed workloads to a namespace (eg. using kubectl to deploy monitoring) and you want to deploy the _exact same workloads_ to the same namespace, then, it's best to delete that namespace first to avoid deployment conflict; 
-If this doesnt apply to your case, then you can move to the next section.
+If this doesnt apply to your case, then you can skip this section and move on to the next.
 - Confirm or Switch to the namespace where you have deployed the socks example.
 
 ```
@@ -258,7 +258,7 @@ kubectl delete ServiceAccount node-exporter -n monitoring
 **Add Git Repo Cont'd**
 - naviage to kubeconfig folder: `cd .kube`
 - Edit the `socks-git-repo.yaml` file 
-- Set the `repo:` field to your own repo (or leave it as is to reference this one).
+- Set the `repo:` **value to your own repo** (or leave it as is to reference this one).
 - set the `paths:` field to your relevant manifests path(s) of the workloads you want to deploy.
 - edit the cluster filters to match with your desired cluster or cluster group.
 > Feel free to comment/uncomment any of the cluster selectors. There must be at least one option that can be used to correctly identify the desired cluster or cluster group.
@@ -266,13 +266,13 @@ kubectl delete ServiceAccount node-exporter -n monitoring
 
 - Go to Rancher UI (still in `Continuous Delivery` | `fleet-default`)
 - Select `Git Repos` -> `Add Repository` -> `Edit As YAML`
-> **ALWAYS** make sure the referenced has been pushed and is available online.
+> **ALWAYS** make sure the referenced repo has been pushed and is available online.
 The scope of this guide does not cover private repos or air-gapped envoronments.
 
 - paste the `socks-git-repo.yaml` content in rancher and select `Create`
 - If unedited, Fleet will now track the manifests of socks shop and logging
 
-> You can also use the form UI to add the GitRepo details.
+> You can also use the form UI to add the GitRepo details (it's simple to do so.).
 - Check the status of what the fleet is doing
 ```
 # Downstream cluster

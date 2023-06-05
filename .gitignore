@@ -148,7 +148,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.kube/do-custom.yaml
 
 #certificates
 .certs
@@ -177,3 +176,4 @@ dmypy.json
  
 # Cython debug symbols
 cython_debug/
+.kube/quickstart-do-custom.yaml
