@@ -1,0 +1,18 @@
+# not using this because of sensitivity
+apiVersion: v1
+kind: Secret
+metadata:
+  name: external-tls
+  annotations:
+    field.cattle.io/description: tls cert for
+#    key: string
+  labels:
+    {}
+#    key: string
+  namespace: default
+type: kubernetes.io/tls
+data:
+  tls.crt: >-
+    xxxxxxxxxxxxxxxxxxxxxxxxxxxxx==
+  tls.key: >-
+    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx==

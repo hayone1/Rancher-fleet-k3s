@@ -1,0 +1,39 @@
+
+# Hetzner Cloud API token used to create infrastructure
+hcloud_token = ""
+
+# Admin password to use for Rancher server bootstrap, min. 12 characters
+rancher_server_admin_password = ""
+
+# Version of cert-manager to install alongside Rancher (format: 0.0.0)
+cert_manager_version = "1.10.0"
+
+# Hetzner location used for all resources
+hcloud_location = "fsn1"
+
+# Type of instance to be used for all instances
+instance_type = "cx21"
+
+# Network to create for private communication
+network_cidr = "10.0.0.0/8"
+
+# Subnet to create for private communication. Must be part of the CIDR defined in `network_cidr`.
+network_ip_range = "10.0.1.0/24"
+
+# Zone to create the network in
+network_zone = "eu-central"
+
+# Prefix added to names of all resources
+prefix = "quickstart"
+
+# The helm repository, where the Rancher helm chart is installed from
+rancher_helm_repository = "https://releases.rancher.com/server-charts/latest"
+
+# Kubernetes version to use for Rancher server cluster
+rancher_kubernetes_version = "v1.23.14+k3s1"
+
+# Rancher server version (format: v0.0.0)
+rancher_version = "2.7.1"
+
+# Kubernetes version to use for managed workload cluster
+workload_kubernetes_version = "v1.23.14+rke2r1"

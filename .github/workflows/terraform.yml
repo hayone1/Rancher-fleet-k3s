@@ -1,0 +1,138 @@
+name: 'Terraform'
+env:
+  Applied: 'true'
+  DestroyEnv: 'true'
+  ACCESS_KEY: ${{ secrets.DO_ACCESS_KEY }}
+  DEFAULT_PASS: ${{ secrets.RANCHER_DEFAULT_PASS }}
+  # IMPORTANT, CHANGE THIS TO TRUE IF THE INFRA HAS ALREADY BEEN DEPLOYED
+  # TO PREVENT RE-DEPLOYING THE ENVIRONMENT
+
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - k3s_Setup_Terraform/rancher/do/**
+      #if changes were maded to the terraform folder
+  pull_request:
+    branches:
+    - main
+    paths:
+    - k3s_Setup_Terraform/rancher/do/**
+      #if changes were maded to the terraform folder
+
+jobs:
+  terraform:
+    name: 'Terraform ${{ matrix.provider }}'
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+      #  provider: ['rancher/aws', 'rancher/azure', 'rancher/do', 'rancher/gcp', 'rancher/hcloud', 'rancher/linode', 'rancher/scw', 'rancher/outscale', 'neuvector/aws']
+       provider: ['k3s_Setup_Terraform/rancher/do'] # using only digital ocean provider
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ matrix.provider }}
+
+    # Checkout the repository to the GitHub Actions runner
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Install the latest version of Terraform CLI
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      # with:
+      #    terraform_version: 1.3.0
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      id: init
+      run: terraform init
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      id: fmt
+      run: terraform fmt -check
+
+    # Validates the Terraform configuration files
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate
+
+    - name: Terraform plan
+      id: plan
+      if: github.event_name == 'pull_request'
+      run: terraform plan -no-color -input=false
+      continue-on-error: true
+
+    - name: Setup go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17.6
+
+    - uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+        script: |
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+          <details><summary>Show Plan</summary>
+
+          \`\`\`\n
+          ${process.env.PLAN}
+          \`\`\`
+
+          </details>
+          *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+
+    - name: Terraform Check
+      # if: env.Applied == false
+      run: |
+        if ${Applied} == true; then
+          echo "I am able to read env variable as true = $Applied"
+        else
+          echo "I am able to read env variable as false = $Applied"
+        fi
+
+    - name: Terraform Apply
+      # do not run this if the environment is already applied
+      run: |
+        if ${Applied} == true; then
+          echo "Environment already deployed"
+        else
+          echo "Setting up fresh environment"
+          terraform apply -auto-approve -input=false
+        fi
+      env: 
+        TF_VAR_do_token: ${{ secrets.DO_ACCESS_KEY }}
+        TF_VAR_rancher_server_admin_password: ${{ secrets.RANCHER_DEFAULT_PASS }}
+        TF_VAR_droplet_server_size: 's-2vcpu-4gb'
+        TF_VAR_droplet_node_size: 's-4vcpu-8gb'
+
+    - name: Terraform Destroy
+      run: |
+        if ${DestroyEnv} == true; then
+          echo "Preparing to destroy the environment"
+          terraform destroy --auto-approve
+        fi
+      
