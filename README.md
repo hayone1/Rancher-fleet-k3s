@@ -102,7 +102,7 @@ kubectl config view --kubeconfig .kube/do-custom.yaml
 ```
 kubectl config get-contexts 
 ```
-> **VERY IMPORTANT:** if your kube config file, in your local machine, is in a custom location, always append the cobe config flag to your kubectl commands. For example, assuming your config file is called `do-custom.yaml` and you are in the root directory of the project, then the above commands will then become
+> **VERY IMPORTANT:** if your kube config file, in your local machine, is in a custom location, always append the cobe config flag to your kubectl commands. For example, assuming your config file is called `do-custom.yaml` and you are in the root directory of the git project, then the above commands will instead become
 
 ```
 kubectl config view --kubeconfig .kube/do-custom.yaml
@@ -184,6 +184,7 @@ kubectl delete storageclass longhorn-test
 ### **Install Fleet Helm charts**
 > **_NOTE:_**  This step may fail if run from local device but you haven't saved your kubeconfig file  in `~/.kube` folder, **Alternatively, just run the command in the desired cluster's CLI (top right).**
 - For Rancher, it is recommended to first create a namespace (eg `cattle-fleet-system`) inside a project in from UI. This would especially be important where you want elevated Pod Security Policy, which is what we would like for fleet.
+![Alt text](image.png)
 ```
 helm -n cattle-fleet-system upgrade -i --create-namespace --wait \
     fleet-crd https://github.com/rancher/fleet/releases/download/v0.6.0-rc.5/fleet-crd-0.6.0-rc.5.tgz
