@@ -183,13 +183,14 @@ kubectl delete storageclass longhorn-test
 
 ### **Install Fleet Helm charts**
 > **_NOTE:_**  This step may fail if run from local device but you haven't saved your kubeconfig file  in `~/.kube` folder, **Alternatively, just run the command in the desired cluster's CLI (top right).**
+- For Rancher, it is recommended to first create a namespace (eg `cattle-fleet-system`) inside a project in from UI. This would especially be important where you want elevated Pod Security Policy, which is what we would like for fleet.
 ```
 helm -n cattle-fleet-system upgrade -i --create-namespace --wait \
     fleet-crd https://github.com/rancher/fleet/releases/download/v0.6.0-rc.5/fleet-crd-0.6.0-rc.5.tgz
 helm -n cattle-fleet-system upgrade -i --create-namespace --wait \
     fleet https://github.com/rancher/fleet/releases/download/v0.6.0-rc.5/fleet-0.6.0-rc.5.tgz
 ```
-> Remember you can run the commands from kubectl within the desired cluster in rancher CLI(eg.`do-custom` and `local`)  
+>_Remember you can run the commands from kubectl within the desired cluster in rancher CLI(eg.`do-custom` and `local`)_
 
 - Fleet should be ready to use now for single/multi cluster. You can check the status of the Fleet controller pods by running the below commands.
 ```
